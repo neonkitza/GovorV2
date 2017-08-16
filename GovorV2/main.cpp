@@ -4,13 +4,8 @@
 #include "pahelper.h"
 #include "pahelper.h"
 #include <dirent.h>
+#include "HMM.h"
 
-struct MFCCWord
-{
-	Window *windows;
-	int numOfWindows;
-	char word[50];
-};
 bool checkFolder(const char * path);
 bool readFolder(const char * path, const char * ekstenzija, std::vector<char*> &fileList);
 
@@ -45,15 +40,20 @@ int saveWordMFCC(const char * fileName, std::vector<Window> word, int wordSize)
 
 	uint32_t wordSize32 = wordSize;
 	fwrite(&wordSize32, sizeof(uint32_t), 1, f);
-
 	for (int i = 0; i < wordSize; i++)
-		fwrite(word[i].mfcc, sizeof(float), 12, f);
+	{
+		for (int j = 0; j < 37; j++)
+
+			printf("SAVE za word[%d] - MFCC[%d] = %f\n", i, j, word[i].mfcc.completeMfcc[j]);
+	}
+	for (int i = 0; i < wordSize; i++)
+		fwrite(&word[i].mfcc.completeMfcc[0], sizeof(float), 37, f);
 
 	fclose(f);
 
 	return 1;
 }
-int readWordMFCC(const char * fileName, Window ** word)
+int readWordMFCC(const char * fileName, std::vector<Window>& word)
 {
 	uint32_t wordSize = 0;
 
@@ -64,17 +64,26 @@ int readWordMFCC(const char * fileName, Window ** word)
 		return 0;
 	}
 	fread(&wordSize, sizeof(uint32_t), 1, f);
-	*word = (Window*)calloc(wordSize, sizeof(Window));
+	//*word = (Window*)calloc(wordSize, sizeof(Window));
+	word.resize(wordSize);
+	//std::vector<Window> prozori;
+	//prozori.resize(wordSize);
 	for (int i = 0; i < wordSize; i++)
-		fread((*word)[i].mfcc, sizeof(float), 12, f);
+	{
+		//(*word)[i].mfcc.completeMfcc.resize(37);
+		//fread(&(*word)[i].mfcc.completeMfcc, sizeof(float), 37, f);
+		//int temp = i;
+		word[i].mfcc.completeMfcc.resize(37);
+		fread(&word[i].mfcc.completeMfcc[0], sizeof(float), 37, f);
+	}
 
 	printf(" ----------------------\n");
 	printf("MFCC za %s\n", fileName);
 	for (int i = 0; i < wordSize; i++)
 	{
-		for (int j = 0; j < 12; j++)
+		for (int j = 0; j < 37; j++)
 
-			printf("za word[%d] - MFCC[%d] = %f\n", i, j, (*word)[i].mfcc[j]);
+			printf("READ za word[%d] - MFCC[%d] = %f\n", i, j, word[i].mfcc.completeMfcc[j]);
 	}
 	fclose(f);
 	return wordSize;
@@ -149,7 +158,7 @@ bool ucitajBazu(const char *nazivBaze, std::vector<MFCCWord> &reci)
 		strcpy(putanja, mfccFolder);
 		strcat(putanja, "/");
 		strcat(putanja, dataFajlovi[i]);
-		rec.numOfWindows = readWordMFCC(putanja, &rec.windows);
+		rec.numOfWindows = readWordMFCC(putanja, rec.windows);
 
 		if (rec.numOfWindows == 0)
 		{
@@ -165,6 +174,15 @@ bool ucitajBazu(const char *nazivBaze, std::vector<MFCCWord> &reci)
 	}
 
 	return true;
+}
+
+void trainHMM(HMM& hmm)
+{
+	std::vector<MFCCWord> reci;
+	
+	ucitajBazu("trainBaza\\hello",reci);
+	hmm.train(reci);
+	//
 }
 
 void compare()
@@ -464,9 +482,10 @@ bool checkFolder(const char * path)
 	}
 }
 
-void calcMFCCforDB(const char * name)
+/*name - naziv foldera*/
+void calcMFCCforFolder(const char * name)
 {
-	std::vector<char*> fileList;
+	std::vector<char*> fileList; //lista wav fajlova u folderu
 	readFolder(name, ".wav", fileList);
 
 	char command[256];
@@ -483,46 +502,7 @@ void calcMFCCforDB(const char * name)
 		strcpy(path, name);
 		strcat(path, "/");
 		strcat(path, fileList[i]);
-		//Window *prozori = NULL;
-		//int brojProzora = readWordMFCC(path, &prozori);
-		//processAudio()
-		/*
-		SNDFILE *sf;
-		SF_INFO info;
-		int num_channels;
-		int num, num_items;
-		double *buf;
-		int f, sr, c;
-		//int i, j;
-
-		// Open the WAV file. 
-		info.format = 0;
-		sf = sf_open(path, SFM_READ, &info);
-		if (sf == NULL)
-		{
-			printf("Failed to open the file.\n");
-			exit(-1);
-		}
-		// Print some of the info, and figure out how much data to read. 
-		f = info.frames;
-		sr = info.samplerate;
-		c = info.channels;
-
-
-		printf("frames=%d\n", f);
-		printf("samplerate=%d\n", sr);
-		printf("channels=%d\n", c);
-		//printf("format=%d\n", info.format);
-		num_items = f*c;
-		printf("num_items=%d\n", num_items);
-
-		// Allocate space for the data to be read, then read it. 
-		buf = (double *)malloc(info.frames * sizeof(double));
-		num = sf_read_double(sf, buf, info.frames);
-		sf_close(sf);
-
-		printf("Read %d items\n", num);
-		*/
+		
 		VoiceFile vf;
 		vf.readFile(path);
 		vf.processAudio(true);
@@ -554,8 +534,14 @@ void calcMFCCforDB(const char * name)
 
 int main()
 {
-	VoiceFile vf;
-	vf.readFile("bane.wav");
-	vf.processAudio(true);
+	//VoiceFile vf;
+	//vf.readFile("bane.wav");
+	//vf.processAudio(false);
+	//saveWordMFCC("baneMFCC", vf.voiceWindows, vf.voiceWindows.size());
+	//std::vector<Window> word;
+	//readWordMFCC("baneMFCC", word);
+	HMM hmm;
+	trainHMM(hmm);
+	//calcMFCCforFolder("trainBaza\\hello");
 	system("pause");
 }

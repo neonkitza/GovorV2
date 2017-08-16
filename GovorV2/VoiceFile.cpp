@@ -164,7 +164,7 @@ void VoiceFile::calcMFCC()
 	for (int i = 0; i < voiceWindows.size(); i++)
 	{
 		DFT(1, voiceWindows[i].data.size(), &voiceWindows[i].data[0]); //trebalo bi fft a ne dft?
-		voiceWindows[i].calcMFCC();
+		voiceWindows[i].mfcc.calc(voiceWindows[i].data);
 	}
 }
 void VoiceFile::calcStartEnd() 

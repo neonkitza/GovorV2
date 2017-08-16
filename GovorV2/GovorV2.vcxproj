@@ -148,7 +148,9 @@
     <ClInclude Include="CvHMM.h" />
     <ClInclude Include="HMM.h" />
     <ClInclude Include="libmfcc.h" />
+    <ClInclude Include="MFCC.h" />
     <ClInclude Include="pahelper.h" />
+    <ClInclude Include="util.h" />
     <ClInclude Include="VoiceFile.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
@@ -156,6 +158,7 @@
     <ClCompile Include="HMM.cpp" />
     <ClCompile Include="libmfcc.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MFCC.cpp" />
     <ClCompile Include="pahelper.cpp" />
     <ClCompile Include="VoiceFile.cpp" />
     <ClCompile Include="Window.cpp" />

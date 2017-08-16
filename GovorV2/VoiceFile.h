@@ -5,6 +5,16 @@
 
 #define SIZE_IN_MS 20
 
+struct MFCCWord
+{
+	//int kojiState;
+	//int id;
+	//Window *windows;
+	std::vector<Window> windows;
+	int numOfWindows;
+	char word[50];
+};
+
 class VoiceFile
 {
 public:

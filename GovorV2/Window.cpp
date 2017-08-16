@@ -20,13 +20,7 @@ float absolute(float a)
 		return a;
 	}
 }
-void Window::calcMFCC()
-{
-	for (int i = 0; i < 12; i++)
-	{
-		mfcc[i] = GetCoefficient(&data[0], 44100, 48, data.size(), i);
-	}
-}
+
 /*
 double Window::calcEuclideanDistance(Window w)
 {
