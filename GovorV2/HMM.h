@@ -1,4 +1,4 @@
-#include <opencv2/core/core.hpp>
+
 #include <map>
 #include "VoiceFile.h"
 #pragma once
@@ -17,13 +17,16 @@ struct Segment
 
 	MFCC modelVektorSegmenta;
 
-	float kovarijansa;
+	double kovarijansa[37];
+	double covMatrixSum;
+	int numOfVectorsInSegment;
 	
 
 }; 
 struct Sablon
 {
 	std::vector<MFCC> vektoriUSablonu;
+
 	//MFCC modelVektor;
 
 };
@@ -33,7 +36,13 @@ class HMM
 private:
 	void initInitialStateDistribution();
 	void HMM::createModelVectors(std::vector<std::vector<Sablon>>& newWords);
-	void poravnavanjeRadiTreniranja(std::vector<std::vector<Sablon>>& newWords, std::vector<MFCCWord>& reci);
+	//void gaussMesavina(Window w);
+	void calcObsProbability(Segment & segment);
+	double getEmissionProb(MFCC ot, int whichState);
+	//double getEmissionProb(MFCC ot);
+	//double getEmissionProb(Window w);
+	//void calcObsProbability(double kovarijansa[37]);
+	//void calcObsProbability(std::vector<std::vector<Sablon>>& newWords);
 public:
 	const int N = NUMBER_OF_STATES;
 	

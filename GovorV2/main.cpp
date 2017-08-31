@@ -535,13 +535,15 @@ void calcMFCCforFolder(const char * name)
 int main()
 {
 	//VoiceFile vf;
-	//vf.readFile("bane.wav");
+	//vf.readFile("bukis.wav");
 	//vf.processAudio(false);
-	//saveWordMFCC("baneMFCC", vf.voiceWindows, vf.voiceWindows.size());
+	//saveWordMFCC("bukisMFCC", vf.voiceWindows, vf.voiceWindows.size());
 	//std::vector<Window> word;
-	//readWordMFCC("baneMFCC", word);
+	//readWordMFCC("bukisMFCC", word);
+	
+	
 	HMM hmm;
 	trainHMM(hmm);
-	//calcMFCCforFolder("trainBaza\\hello");
+	calcMFCCforFolder("trainBaza\\hello");
 	system("pause");
 }
