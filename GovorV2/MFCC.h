@@ -8,6 +8,7 @@ public:
 	double mfcc[12], deltaMfcc[12], deltaDeltaMfcc[12];
 	double energy, deltaEnergy, deltaDeltaEnergy;
 	std::vector<float> completeMfcc;
+	int indexInWord = 0;
 	MFCC();
 	~MFCC();
 	void calc(std::vector<double> data);
@@ -36,6 +37,24 @@ public:
 		for (int i = 0; i < 37; i++)
 		{
 			m.completeMfcc[i] = (float)this->completeMfcc[i]/n;
+		}
+		return m;
+	}
+	MFCC operator*(double n)
+	{
+		MFCC m;
+		for (int i = 0; i < 37; i++)
+		{
+			m.completeMfcc[i] = (float)this->completeMfcc[i] * n;
+		}
+		return m;
+	}
+	MFCC operator/(double n)
+	{
+		MFCC m;
+		for (int i = 0; i < 37; i++)
+		{
+			m.completeMfcc[i] = (float)this->completeMfcc[i] / n;
 		}
 		return m;
 	}

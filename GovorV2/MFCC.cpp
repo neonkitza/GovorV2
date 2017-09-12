@@ -4,6 +4,7 @@
 
 MFCC::MFCC()
 {
+	completeMfcc.resize(37,0);
 }
 
 
